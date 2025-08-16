@@ -26,7 +26,7 @@ export default function FootballScoreboard() {
   const [score2, setScore2] = useState(0)
 
   // Estados do tempo
-  const [matchDuration, setMatchDuration] = useState(90) // minutos
+  const [matchDuration, setMatchDuration] = useState(10) // minutos
   const [currentTime, setCurrentTime] = useState(0) // segundos
   const [isRunning, setIsRunning] = useState(false)
   const [extraTime, setExtraTime] = useState(0) // acréscimos em segundos
