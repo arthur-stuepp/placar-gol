@@ -65,24 +65,35 @@ export default function FootballScoreboard() {
     return () => clearInterval(interval)
   }, [isRunning, matchDuration, extraTime])
 
-  // Função para tocar o alarme
   const playAlarm = () => {
-    // Criar um beep usando Web Audio API
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-    const oscillator = audioContext.createOscillator()
-    const gainNode = audioContext.createGain()
 
-    oscillator.connect(gainNode)
-    gainNode.connect(audioContext.destination)
+    // Criar múltiplos beeps em sequência para um alarme mais longo
+    const playBeep = (startTime: number, frequency: number, duration: number) => {
+      const oscillator = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
 
-    oscillator.frequency.value = 800
-    oscillator.type = "sine"
+      oscillator.connect(gainNode)
+      gainNode.connect(audioContext.destination)
 
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1)
+      oscillator.frequency.value = frequency
+      oscillator.type = "sine"
 
-    oscillator.start(audioContext.currentTime)
-    oscillator.stop(audioContext.currentTime + 1)
+      // Volume mais alto (0.7 em vez de 0.3)
+      gainNode.gain.setValueAtTime(0.7, startTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration)
+
+      oscillator.start(startTime)
+      oscillator.stop(startTime + duration)
+    }
+
+    // Sequência de beeps alternados por 5 segundos
+    const currentTime = audioContext.currentTime
+    for (let i = 0; i < 10; i++) {
+      const startTime = currentTime + i * 0.5
+      const frequency = i % 2 === 0 ? 800 : 1000 // Alterna entre duas frequências
+      playBeep(startTime, frequency, 0.4)
+    }
   }
 
   // Funções de controle do placar
