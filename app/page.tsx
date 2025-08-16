@@ -139,10 +139,10 @@ export default function FootballScoreboard() {
   const isOvertime = currentTime > matchDuration * 60
 
   return (
-    <div className="min-h-screen bg-green-600 p-4 flex items-center justify-center">
+    <div className="min-h-screen bg-green-600 p-2 md:p-4 flex items-center justify-center">
       <div className="w-full max-w-6xl">
         {/* Header com controles */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4 md:mb-6">
           <div className="flex gap-2">
             <Dialog open={showSettings} onOpenChange={setShowSettings}>
               <DialogTrigger asChild>
@@ -213,15 +213,84 @@ export default function FootballScoreboard() {
             </Dialog>
           </div>
 
-          <Button onClick={startNewMatch} variant="destructive">
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Nova Partida
+          <Button onClick={startNewMatch} variant="destructive" size="sm" className="md:size-default">
+            <RotateCcw className="w-4 h-4 mr-1 md:mr-2" />
+            <span className="hidden sm:inline">Nova Partida</span>
+            <span className="sm:hidden">Nova</span>
           </Button>
         </div>
 
-        {/* Placar Principal */}
-        <Card className="p-8 mb-6">
-          <div className="grid grid-cols-3 gap-8 items-center">
+        <Card className="p-4 md:p-8 mb-4 md:mb-6">
+          {/* Layout para tela vertical (portrait) */}
+          <div className="block md:hidden">
+            {/* Tempo no topo */}
+            <div className="text-center mb-6">
+              <div className="text-4xl font-bold mb-2">{formatTime(currentTime)}</div>
+              {isOvertime && (
+                <Badge variant="destructive" className="mb-2">
+                  Acréscimos: +{Math.floor((currentTime - matchDuration * 60) / 60)}'
+                </Badge>
+              )}
+              <div className="text-sm text-muted-foreground mb-4">Restam: {formatTime(timeLeft)}</div>
+
+              <div className="flex justify-center gap-2 mb-4">
+                <Button onClick={toggleTimer} size="lg">
+                  {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                </Button>
+              </div>
+
+              <div className="flex justify-center gap-1">
+                <Button onClick={() => addExtraTime(60)} variant="outline" size="sm">
+                  +1min
+                </Button>
+                <Button onClick={() => addExtraTime(300)} variant="outline" size="sm">
+                  +5min
+                </Button>
+                <Button onClick={() => addExtraTime(-60)} variant="outline" size="sm">
+                  -1min
+                </Button>
+              </div>
+            </div>
+
+            {/* Times em stack vertical */}
+            <div className="space-y-6">
+              {/* Time 1 */}
+              <div className="text-center">
+                <h2 className="text-xl font-bold mb-3">{team1Name}</h2>
+                <div className="text-6xl font-bold mb-4 text-blue-600">{score1}</div>
+                <div className="flex gap-2 justify-center">
+                  <Button onClick={() => addGoal(1)} size="lg" className="h-12 flex-1 max-w-32">
+                    <Plus className="w-5 h-5 mr-1" />
+                    GOL
+                  </Button>
+                  <Button onClick={() => removeGoal(1)} variant="outline" size="sm" className="px-3">
+                    <Minus className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Divisor */}
+              <div className="text-center text-2xl font-bold text-muted-foreground">VS</div>
+
+              {/* Time 2 */}
+              <div className="text-center">
+                <h2 className="text-xl font-bold mb-3">{team2Name}</h2>
+                <div className="text-6xl font-bold mb-4 text-red-600">{score2}</div>
+                <div className="flex gap-2 justify-center">
+                  <Button onClick={() => addGoal(2)} size="lg" className="h-12 flex-1 max-w-32">
+                    <Plus className="w-5 h-5 mr-1" />
+                    GOL
+                  </Button>
+                  <Button onClick={() => removeGoal(2)} variant="outline" size="sm" className="px-3">
+                    <Minus className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Layout para tela horizontal (landscape) - mantém o layout original */}
+          <div className="hidden md:grid grid-cols-3 gap-8 items-center">
             {/* Time 1 */}
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-4">{team1Name}</h2>
@@ -289,7 +358,7 @@ export default function FootballScoreboard() {
         {currentTime >= totalMatchTime && (
           <Card className="p-4 bg-red-100 border-red-300">
             <div className="text-center">
-              <h3 className="text-xl font-bold text-red-800">🚨 TEMPO ESGOTADO! 🚨</h3>
+              <h3 className="text-lg md:text-xl font-bold text-red-800">🚨 TEMPO ESGOTADO! 🚨</h3>
               <p className="text-red-700">A partida chegou ao fim!</p>
             </div>
           </Card>
